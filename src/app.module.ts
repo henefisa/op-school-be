@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './modules';
+import { AuthModule, UsersModule } from './modules';
 
 @Module({
   imports: [
@@ -25,6 +25,7 @@ import { UsersModule } from './modules';
       }),
     }),
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
