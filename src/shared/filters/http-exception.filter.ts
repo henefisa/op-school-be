@@ -20,6 +20,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     if (errorMessage) {
       return response.status(status).json({
+        statusCode: status,
         key,
         message: errorMessage,
         timestamp: new Date().toISOString(),
@@ -28,6 +29,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
 
     return response.status(500).json({
+      statusCode: status,
       message: key,
       timestamp: new Date().toISOString(),
       path: request.url,
