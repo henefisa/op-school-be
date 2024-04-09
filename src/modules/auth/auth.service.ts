@@ -3,7 +3,7 @@ import { UsersService } from '../users';
 import { LoginDto } from './dto';
 import { ILike } from 'typeorm';
 import bcrypt from 'bcrypt';
-import { ErrorMessageKey } from 'src/shared';
+import { AuthPayload, ErrorMessageKey } from 'src/shared';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
@@ -41,7 +41,7 @@ export class AuthService {
         sub: user.id,
         email: user.email,
         role: user.role,
-      }),
+      } as AuthPayload),
       refreshToken: await this.jwtService.signAsync(
         {
           sub: user.id,
