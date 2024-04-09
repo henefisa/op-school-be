@@ -1,7 +1,6 @@
 import { Column, Entity } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import dayjs from 'dayjs';
-import { Role } from 'src/shared';
+import { Role } from 'src/shared/constants';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -23,18 +22,8 @@ export class User extends BaseEntity {
   @Column()
   lastName: string;
 
-  @Column({
-    type: 'date',
-    transformer: {
-      from: (value: string) => {
-        return dayjs(value);
-      },
-      to: (value: dayjs.Dayjs) => {
-        return value.toISOString();
-      },
-    },
-  })
-  birthday: dayjs.Dayjs;
+  @Column({ type: 'date' })
+  birthday: Date;
 
   @Column({ enum: Role, type: 'enum' })
   role: Role;

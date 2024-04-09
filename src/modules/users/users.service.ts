@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ErrorMessageKey } from 'src/shared';
-import { User } from 'src/typeorm';
+import { ErrorMessageKey } from 'src/shared/error-messages';
+import { User } from 'src/typeorm/entities/user.entity';
 import { FindOneOptions, Repository } from 'typeorm';
 
 @Injectable()

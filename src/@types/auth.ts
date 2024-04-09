@@ -1,4 +1,4 @@
-import { Role } from '../constants';
+import { Role } from '../shared/constants';
 
 export interface AuthPayload {
   sub: string;
