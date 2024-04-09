@@ -4,6 +4,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import { HttpExceptionFilter } from './shared';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +13,8 @@ async function bootstrap() {
   app.use(helmet());
   app.enableCors();
   app.useGlobalFilters(new HttpExceptionFilter());
+
+  const configService = app.get(ConfigService);
 
   const config = new DocumentBuilder()
     .setTitle('School API docs')
@@ -22,6 +25,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  await app.listen(3000);
+  await app.listen(configService.getOrThrow('PORT') ?? 3000);
 }
 bootstrap();
