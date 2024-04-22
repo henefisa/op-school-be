@@ -28,7 +28,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       });
     }
 
-    return response.status(500).json({
+    return response.status(status ?? 500).json({
       statusCode: status,
       message: key,
       timestamp: new Date().toISOString(),
