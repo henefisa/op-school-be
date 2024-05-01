@@ -20,12 +20,6 @@ export class UsersService {
   }
 
   async changePassword(user: User, dto: ChangePasswordDto) {
-    if (dto.newPassword === dto.oldPassword) {
-      throw new BadRequestException(
-        ErrorMessageKey.NewPasswordAndOldPasswordAreTheSame,
-      );
-    }
-
     const currentUser = await this.getOne({
       where: { email: ILike(user.email) },
       select: {
@@ -35,6 +29,12 @@ export class UsersService {
     }).catch(() => {
       throw new BadRequestException(ErrorMessageKey.UserNotFound);
     });
+
+    if (dto.newPassword === dto.oldPassword) {
+      throw new BadRequestException(
+        ErrorMessageKey.NewPasswordAndOldPasswordAreTheSame,
+      );
+    }
 
     const isOldPasswordValid = await bcrypt.compare(
       dto.oldPassword,

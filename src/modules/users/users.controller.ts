@@ -27,7 +27,7 @@ export class UsersController {
   }
 
   @Patch('change-password')
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.OK)
   async changePassword(@Body() dto: ChangePasswordDto, @Req() req: Request) {
     return this.usersService.changePassword(req.user, dto);
   }
