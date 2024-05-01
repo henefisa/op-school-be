@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto';
+import { ForgotPasswordDto, LoginDto } from './dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
 import { JwtRefreshAuthGuard } from 'src/shared/guards/jwt-refresh-auth.guard';
@@ -39,4 +39,15 @@ export class AuthController {
   async refreshToken(@Req() req: Request) {
     return this.authService.refreshToken(req.user);
   }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.CREATED)
+  async fotgotPassword(@Body() dto: ForgotPasswordDto) {
+    return await this.authService.forgotPassword(dto);
+  }
+
+  // @Get('reset-password')
+  // async resetPassword(@Query('token') token: string) {
+  //   return this.authService.resetPassword(token);
+  // }
 }

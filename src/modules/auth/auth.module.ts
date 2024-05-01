@@ -6,9 +6,11 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from 'src/shared/strategies/jwt.strategy';
 import { JwtRefreshStrategy } from 'src/shared/strategies/jwt-refresh.strategy';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
+    MailModule,
     UsersModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
