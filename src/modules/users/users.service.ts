@@ -5,6 +5,7 @@ import { User } from 'src/typeorm/entities/user.entity';
 import { FindOneOptions, ILike, Repository } from 'typeorm';
 import { ChangePasswordDto } from './dto';
 import bcrypt from 'bcrypt';
+import { GetUsersDto } from './dto/get-users.dto';
 
 @Injectable()
 export class UsersService {
@@ -56,6 +57,21 @@ export class UsersService {
 
     return {
       message: 'Password updated',
+    };
+  }
+
+  async getUsers(dto: GetUsersDto) {
+    const [results, count] = await this.userRepository.findAndCount({
+      where: {
+        role: dto.role,
+      },
+      skip: (dto.page - 1) * dto.pageSize,
+      take: dto.pageSize,
+    });
+
+    return {
+      results,
+      count,
     };
   }
 }

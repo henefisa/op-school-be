@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthPayload } from 'src/@types';
 import { UsersService } from '../users/users.service';
+import { User } from 'src/typeorm/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -37,22 +38,34 @@ export class AuthService {
       throw new UnauthorizedException(ErrorMessageKey.InvalidCredentials);
     }
 
+    const authPayload: AuthPayload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
     return {
-      accessToken: await this.jwtService.signAsync({
-        sub: user.id,
-        email: user.email,
-        role: user.role,
-      } as AuthPayload),
-      refreshToken: await this.jwtService.signAsync(
-        {
-          sub: user.id,
-          email: user.email,
-        },
-        {
-          secret: this.configService.getOrThrow('JWT_REFRESH_SECRET'),
-          expiresIn: this.configService.getOrThrow('JWT_REFRESH_EXPIRES_IN'),
-        },
-      ),
+      accessToken: await this.jwtService.signAsync(authPayload),
+      refreshToken: await this.jwtService.signAsync(authPayload, {
+        secret: this.configService.getOrThrow('JWT_REFRESH_SECRET'),
+        expiresIn: this.configService.getOrThrow('JWT_REFRESH_EXPIRES_IN'),
+      }),
+    };
+  }
+
+  async refreshToken(user: User) {
+    const authPayload: AuthPayload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
+    return {
+      accessToken: await this.jwtService.signAsync(authPayload),
+      refreshToken: await this.jwtService.signAsync(authPayload, {
+        secret: this.configService.getOrThrow('JWT_REFRESH_SECRET'),
+        expiresIn: this.configService.getOrThrow('JWT_REFRESH_EXPIRES_IN'),
+      }),
     };
   }
 }
