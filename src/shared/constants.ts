@@ -6,7 +6,14 @@ export enum Role {
 }
 
 export enum Gender {
-  Male = 'Male',
-  Female = 'Female',
-  Orther = 'Other',
+  Male = 'MALE',
+  Female = 'FEMALE',
+  Orther = 'OTHER',
+}
+
+export enum ResultType {
+  Quiz = 'QUIZ',
+  MidTerm = 'MID_TERM',
+  EndTerm = 'END_TERM',
+  Other = 'OTHER',
 }

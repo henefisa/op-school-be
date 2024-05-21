@@ -1,10 +1,9 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Gender, Role } from 'src/shared/constants';
-import { UserImage } from './user-images.entity';
-import { UserClass } from './user-classes.entity';
-import { UserAddress } from './user-addresses.enity';
-import { UserResult } from './user-results.entity';
+import { UserImage } from './user-image.entity';
+import { UserClass } from './user-class.entity';
+import { Address } from './address.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -47,9 +46,6 @@ export class User extends BaseEntity {
   @OneToMany(() => UserClass, (userClass) => userClass.user)
   userClasses: UserClass;
 
-  @OneToMany(() => UserAddress, (userAddress) => userAddress.user)
-  userAddresses: UserAddress;
-
-  @OneToMany(() => UserResult, (userResult) => userResult.user)
-  userResults: UserResult;
+  @OneToMany(() => Address, (address) => address.user)
+  addresses: Address[];
 }
