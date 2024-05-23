@@ -3,11 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { Role } from '../constants';
 import { ROLE_KEY } from '../decorators/roles.decorator';
-
-export class TokenDto {
-  id: number;
-  role: Role;
-}
+import { Request } from 'express';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
@@ -16,15 +12,19 @@ export class RoleGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLE_KEY, [
+    const roles = this.reflector.getAllAndOverride<Role[]>(ROLE_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
 
-    const request = context.switchToHttp().getRequest();
+    if (!roles.length) {
+      return true;
+    }
+
+    const request = context.switchToHttp().getRequest<Request>();
     const user = request.user;
 
-    if (requiredRoles.includes(user.role)) {
+    if (roles.includes(user.role)) {
       return true;
     }
 
