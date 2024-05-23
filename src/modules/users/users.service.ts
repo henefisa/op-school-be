@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { NotFoundException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ErrorMessageKey } from 'src/shared/error-messages';
 import { User } from 'src/typeorm/entities/user.entity';
@@ -14,7 +14,7 @@ export class UsersService {
 
   async getOne(options: FindOneOptions<User>) {
     return await this.userRepository.findOneOrFail(options).catch(() => {
-      throw new BadRequestException(ErrorMessageKey.UserNotFound);
+      throw new NotFoundException(ErrorMessageKey.UserNotFound);
     });
   }
 
