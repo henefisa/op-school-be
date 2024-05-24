@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -17,6 +18,7 @@ import { RoleGuard } from 'src/shared/guards/roles.guard';
 import { Roles } from 'src/shared/decorators/roles.decorator';
 import { Role } from 'src/shared/constants';
 import { UpdateClassDto } from './dto/update-class.dto';
+import { GetClassDto } from './dto/get-class.dto';
 
 @Controller({ path: 'classes', version: '1' })
 @UseGuards(JwtAuthGuard)
@@ -43,6 +45,11 @@ export class ClassesController {
   @Delete(':id')
   async deleteClass(@Param('id', ParseUUIDPipe) id: string) {
     return this.classesService.delete(id);
+  }
+
+  @Get()
+  async getMany(@Query() dto: GetClassDto) {
+    return this.classesService.getMany(dto);
   }
 
   @Get(':id')

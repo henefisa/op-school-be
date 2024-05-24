@@ -7,11 +7,15 @@ export class Class extends BaseEntity {
   @Column()
   name: string;
 
+  @Column()
+  memberLimit: number;
+
   @OneToMany(() => UserClass, (userClass) => userClass.class)
   members: UserClass[];
 
-  constructor(name: string) {
+  constructor(name: string, memberLimit: number) {
     super();
     this.name = name;
+    this.memberLimit = memberLimit;
   }
 }

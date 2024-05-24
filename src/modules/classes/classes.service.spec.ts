@@ -5,15 +5,16 @@ import { Class } from 'src/typeorm/entities/class.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ErrorMessageKey } from 'src/shared/error-messages';
 import { NotFoundException } from '@nestjs/common';
+import { GetClassDto } from './dto/get-class.dto';
 
-const oneClass = new Class('Class single');
+const oneClass = new Class('Class single', 1);
 const classArray = [
-  new Class('Class one'),
-  new Class('Class two'),
-  new Class('Class three'),
+  new Class('Class one', 1),
+  new Class('Class two', 2),
+  new Class('Class three', 3),
 ];
 
-describe('ClassesService', () => {
+describe('Classes Service', () => {
   let service: ClassesService;
   let repository: Repository<Class>;
 
@@ -24,7 +25,9 @@ describe('ClassesService', () => {
         {
           provide: getRepositoryToken(Class),
           useValue: {
-            find: jest.fn().mockResolvedValue(classArray),
+            findAndCount: jest
+              .fn()
+              .mockResolvedValue([classArray, classArray.length]),
             findOneOrFail: jest.fn().mockResolvedValue(oneClass),
             create: jest.fn().mockReturnValue(oneClass),
             save: jest.fn().mockReturnValue(oneClass),
@@ -50,6 +53,17 @@ describe('ClassesService', () => {
       );
       expect(repoSpy).toBeCalledWith({ where: { id: 'a uuid' } });
     });
+    it('should throw an error', () => {
+      const repoSpy = jest
+        .spyOn(repository, 'findOneOrFail')
+        .mockRejectedValue(
+          new NotFoundException(ErrorMessageKey.ClassNotFound),
+        );
+      expect(
+        service.getOne({ where: { id: 'a uuid not exists' } }),
+      ).rejects.toEqual(new NotFoundException(ErrorMessageKey.ClassNotFound));
+      expect(repoSpy).toBeCalledWith({ where: { id: 'a uuid not exists' } });
+    });
   });
 
   describe('create', () => {
@@ -57,11 +71,13 @@ describe('ClassesService', () => {
       expect(
         service.create({
           name: oneClass.name,
+          memberLimit: oneClass.memberLimit,
         }),
       ).resolves.toEqual(oneClass);
       expect(repository.create).toBeCalledTimes(1);
       expect(repository.create).toBeCalledWith({
         name: oneClass.name,
+        memberLimit: oneClass.memberLimit,
       });
       expect(repository.save).toBeCalledTimes(1);
     });
@@ -72,12 +88,16 @@ describe('ClassesService', () => {
       const repoSpy = jest.spyOn(repository, 'findOneOrFail');
       const targetClass = await service.update('a uuid', {
         name: oneClass.name,
+        memberLimit: oneClass.memberLimit,
       });
       expect(repoSpy).toBeCalledWith({ where: { id: 'a uuid' } });
       expect(targetClass).toEqual(oneClass);
       expect(repository.findOneOrFail).toBeCalledTimes(1);
       expect(repository.save).toBeCalledTimes(1);
-      expect(repository.save).toBeCalledWith({ name: oneClass.name });
+      expect(repository.save).toBeCalledWith({
+        name: oneClass.name,
+        memberLimit: oneClass.memberLimit,
+      });
     });
   });
 
@@ -97,6 +117,20 @@ describe('ClassesService', () => {
       );
       expect(repoSpy).toBeCalledWith({ id: 'a uuid not exists' });
       expect(repoSpy).toBeCalledTimes(1);
+    });
+  });
+
+  describe('getMany', () => {
+    it('should return an array of classes', async () => {
+      const getClassDto: GetClassDto = {
+        page: 0,
+        pageSize: 10,
+      };
+      const classes = await service.getMany(getClassDto);
+      expect(classes).toEqual({
+        results: classArray,
+        count: classArray.length,
+      });
     });
   });
 });
