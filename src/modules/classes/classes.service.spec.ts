@@ -1,11 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ClassesService } from './classes.service';
-import { Repository } from 'typeorm';
+import { FindManyOptions, In, Repository } from 'typeorm';
 import { Class } from 'src/typeorm/entities/class.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ErrorMessageKey } from 'src/shared/error-messages';
 import { NotFoundException } from '@nestjs/common';
 import { GetClassDto } from './dto/get-class.dto';
+import { UserClass } from 'src/typeorm/entities/user-class.entity';
+import { UsersService } from '../users/users.service';
+import { AddMembersDto } from './dto/add-members.dto';
+import { User } from 'src/typeorm/entities/user.entity';
+import { RemoveMembersDto } from './dto/remove-members.dto';
+import { GetMembersDto } from './dto/get-members.dto';
 
 const oneClass = new Class('Class single', 1);
 const classArray = [
@@ -13,10 +19,15 @@ const classArray = [
   new Class('Class two', 2),
   new Class('Class three', 3),
 ];
+const userArray = [new User('a uuid'), new User('another uuid')];
+const memberArray = userArray.map(
+  (user) => new UserClass('class uuid', user.id),
+);
 
 describe('Classes Service', () => {
   let service: ClassesService;
   let repository: Repository<Class>;
+  let userClassRepository: Repository<UserClass>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -34,14 +45,37 @@ describe('Classes Service', () => {
             delete: jest.fn().mockResolvedValue(true),
           },
         },
+        {
+          provide: getRepositoryToken(UserClass),
+          useValue: {
+            save: jest.fn().mockReturnValue(memberArray),
+            delete: jest.fn().mockResolvedValue(true),
+            findAndCount: jest
+              .fn()
+              .mockResolvedValue([memberArray, memberArray.length]),
+          },
+        },
+        {
+          provide: UsersService,
+          useValue: {
+            getMany: jest
+              .fn()
+              .mockImplementation((_: FindManyOptions<User>) =>
+                Promise.resolve(userArray),
+              ),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<ClassesService>(ClassesService);
     repository = module.get<Repository<Class>>(getRepositoryToken(Class));
+    userClassRepository = module.get<Repository<UserClass>>(
+      getRepositoryToken(UserClass),
+    );
   });
 
-  it('ClassesService should be defined', () => {
+  it('ClassesService should be detfined', () => {
     expect(service).toBeDefined();
   });
 
@@ -120,16 +154,65 @@ describe('Classes Service', () => {
     });
   });
 
-  describe('getMany', () => {
+  describe('getClasses', () => {
     it('should return an array of classes', async () => {
       const getClassDto: GetClassDto = {
         page: 0,
         pageSize: 10,
       };
-      const classes = await service.getMany(getClassDto);
+      const classes = await service.getClasses(getClassDto);
       expect(classes).toEqual({
         results: classArray,
         count: classArray.length,
+      });
+    });
+  });
+
+  describe('getMembers', () => {
+    it('should return an array of classes', async () => {
+      const getMembersDto: GetMembersDto = {
+        page: 0,
+        pageSize: 10,
+      };
+      const classes = await service.getMembers('class uuid', getMembersDto);
+      expect(classes).toEqual({
+        results: memberArray,
+        count: memberArray.length,
+      });
+    });
+  });
+
+  describe('addMembers', () => {
+    it('should add members to class', async () => {
+      const addMembersDto: AddMembersDto = {
+        memberIds: ['a uuid', 'another uuid'],
+      };
+      const members = await service.addMembers('class uuid', addMembersDto);
+      expect(members).toEqual({
+        results: memberArray,
+        count: memberArray.length,
+      });
+    });
+  });
+
+  describe('removeMembers', () => {
+    it('should remove members from class', async () => {
+      const userClassRepositorySpy = jest.spyOn(userClassRepository, 'delete');
+      jest
+        .spyOn(service, 'getOne')
+        .mockResolvedValue(new Class('Class one', 10, 'class uuid'));
+      const removeMembersDto: RemoveMembersDto = {
+        memberIds: ['a uuid', 'another uuid'],
+      };
+      const members = await service.removeMembers(
+        'class uuid',
+        removeMembersDto,
+      );
+      expect(members).toEqual(undefined);
+      expect(userClassRepositorySpy).toBeCalledTimes(1);
+      expect(userClassRepositorySpy).toBeCalledWith({
+        classId: 'class uuid',
+        userId: In(removeMembersDto.memberIds),
       });
     });
   });

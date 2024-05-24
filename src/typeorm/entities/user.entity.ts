@@ -48,4 +48,9 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Address, (address) => address.user)
   addresses: Address[];
+
+  constructor(id: string) {
+    super();
+    this.id = id;
+  }
 }

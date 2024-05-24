@@ -22,4 +22,10 @@ export class UserClass extends BaseEntity {
 
   @OneToMany(() => Result, (result) => result.userClass)
   results: Result[];
+
+  constructor(classId: string, userId: string) {
+    super();
+    this.classId = classId;
+    this.userId = userId;
+  }
 }

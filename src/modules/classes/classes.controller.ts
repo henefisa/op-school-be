@@ -19,6 +19,9 @@ import { Roles } from 'src/shared/decorators/roles.decorator';
 import { Role } from 'src/shared/constants';
 import { UpdateClassDto } from './dto/update-class.dto';
 import { GetClassDto } from './dto/get-class.dto';
+import { AddMembersDto } from './dto/add-members.dto';
+import { RemoveMembersDto } from './dto/remove-members.dto';
+import { GetMembersDto } from './dto/get-members.dto';
 
 @Controller({ path: 'classes', version: '1' })
 @UseGuards(JwtAuthGuard)
@@ -48,12 +51,36 @@ export class ClassesController {
   }
 
   @Get()
-  async getMany(@Query() dto: GetClassDto) {
-    return this.classesService.getMany(dto);
+  async getClasses(@Query() dto: GetClassDto) {
+    return this.classesService.getClasses(dto);
   }
 
   @Get(':id')
   async getById(@Param('id', ParseUUIDPipe) id: string) {
     return this.classesService.getOne({ where: { id } });
+  }
+
+  @Get(':id/members')
+  async getMembers(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: GetMembersDto,
+  ) {
+    return this.classesService.getMembers(id, dto);
+  }
+
+  @Post(':id/members')
+  async addMembers(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AddMembersDto,
+  ) {
+    return this.classesService.addMembers(id, dto);
+  }
+
+  @Delete(':id/members')
+  async removeMembers(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: RemoveMembersDto,
+  ) {
+    return this.classesService.removeMembers(id, dto);
   }
 }

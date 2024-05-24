@@ -2,7 +2,7 @@ import { NotFoundException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ErrorMessageKey } from 'src/shared/error-messages';
 import { User } from 'src/typeorm/entities/user.entity';
-import { FindOneOptions, Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { GetUsersDto } from './dto/get-users.dto';
 
 @Injectable()
@@ -16,6 +16,10 @@ export class UsersService {
     return await this.userRepository.findOneOrFail(options).catch(() => {
       throw new NotFoundException(ErrorMessageKey.UserNotFound);
     });
+  }
+
+  async getMany(options: FindManyOptions<User>) {
+    return this.userRepository.find(options);
   }
 
   async getUsers(dto: GetUsersDto) {

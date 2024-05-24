@@ -13,8 +13,9 @@ export class Class extends BaseEntity {
   @OneToMany(() => UserClass, (userClass) => userClass.class)
   members: UserClass[];
 
-  constructor(name: string, memberLimit: number) {
+  constructor(name: string, memberLimit: number, id?: string) {
     super();
+    this.id = id;
     this.name = name;
     this.memberLimit = memberLimit;
   }
