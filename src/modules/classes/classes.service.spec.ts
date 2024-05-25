@@ -75,7 +75,7 @@ describe('Classes Service', () => {
     );
   });
 
-  it('ClassesService should be detfined', () => {
+  it('ClassesService should be defined', () => {
     expect(service).toBeDefined();
   });
 
