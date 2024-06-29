@@ -8,15 +8,15 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
+  // UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateClassDto } from './dto/create-class.dto';
 import { ClassesService } from './classes.service';
-import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
-import { RoleGuard } from 'src/shared/guards/roles.guard';
-import { Roles } from 'src/shared/decorators/roles.decorator';
-import { Role } from 'src/shared/constants';
+// import { JwtAuthGuard } from 'src/shared/guards/jwt-auth.guard';
+// import { RoleGuard } from 'src/shared/guards/roles.guard';
+// import { Roles } from 'src/shared/decorators/roles.decorator';
+// import { Role } from 'src/shared/constants';
 import { UpdateClassDto } from './dto/update-class.dto';
 import { GetClassDto } from './dto/get-class.dto';
 import { AddMembersDto } from './dto/add-members.dto';
@@ -24,15 +24,15 @@ import { RemoveMembersDto } from './dto/remove-members.dto';
 import { GetMembersDto } from './dto/get-members.dto';
 
 @Controller({ path: 'classes', version: '1' })
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 @ApiTags('Classes')
 export class ClassesController {
   constructor(private readonly classesService: ClassesService) {}
 
   @Post()
-  @Roles(Role.Admin, Role.Teacher)
-  @UseGuards(RoleGuard)
+  // @Roles(Role.Admin, Role.Teacher)
+  // @UseGuards(RoleGuard)
   async createClass(@Body() dto: CreateClassDto) {
     return this.classesService.create(dto);
   }
