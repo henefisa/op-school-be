@@ -34,10 +34,7 @@ export class User extends BaseEntity {
   @Column({ enum: Gender, type: 'enum', nullable: true })
   gender: Gender;
 
-  @Column({ nullable: true })
-  studentId: string;
-
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   parentId: string;
 
   @OneToMany(() => UserImage, (image) => image.user)
@@ -48,9 +45,4 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Address, (address) => address.user)
   addresses: Address[];
-
-  constructor(id: string) {
-    super();
-    this.id = id;
-  }
 }

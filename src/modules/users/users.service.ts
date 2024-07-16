@@ -1,28 +1,25 @@
-import { NotFoundException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ErrorMessageKey } from 'src/shared/error-messages';
 import { User } from 'src/typeorm/entities/user.entity';
-import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 import { GetUsersDto } from './dto/get-users.dto';
+import { BaseService } from 'src/shared/base.service';
+import { EntityName } from 'src/shared/error-messages';
 
 @Injectable()
-export class UsersService {
+export class UsersService extends BaseService<User> {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
-
-  async getOne(options: FindOneOptions<User>) {
-    return await this.userRepository.findOneOrFail(options).catch(() => {
-      throw new NotFoundException(ErrorMessageKey.UserNotFound);
-    });
+  ) {
+    super(EntityName.User, userRepository);
   }
 
   async getMany(options: FindManyOptions<User>) {
     return this.userRepository.find(options);
   }
 
-  async getUsers(dto: GetUsersDto) {
+  async findAll(dto: GetUsersDto) {
     const [results, count] = await this.userRepository.findAndCount({
       where: {
         role: dto.role,

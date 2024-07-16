@@ -1,6 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginDto } from './dto';
-import { ILike } from 'typeorm';
 import bcrypt from 'bcrypt';
 import { ErrorMessageKey } from 'src/shared/error-messages';
 import { JwtService } from '@nestjs/jwt';
@@ -19,8 +18,8 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const user = await this.usersService
-      .getOne({
-        where: { email: ILike(dto.email) },
+      .getOneOrThrow({
+        where: { email: dto.email.toLowerCase() },
         select: {
           id: true,
           email: true,
