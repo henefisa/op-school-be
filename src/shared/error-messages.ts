@@ -13,3 +13,11 @@ const MessageDetail = {
 export const getErrorMessage = (key: ErrorMessageKey) => {
   return MessageDetail[key];
 };
+
+export enum EntityName {
+  User = 'user',
+}
+
+export const ERROR_MESSAGES = {
+  notFound: (entityName: EntityName) => `${entityName}_not_found`,
+};
