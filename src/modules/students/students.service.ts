@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { BaseService } from 'src/shared/base.service';
 import { EntityName } from 'src/shared/error-messages';
 import bcrypt from 'bcrypt';
+import { UpdateStudentDto } from './dto/update-student.dto';
 
 @Injectable()
 export class StudentsService extends BaseService<User> {
@@ -24,19 +25,20 @@ export class StudentsService extends BaseService<User> {
     return this.usersService.findAll({ ...dto, role: Role.Student });
   }
 
-  async create(dto: CreateStudentDto) {
-    if (dto.role !== Role.Student) {
-      throw new BadRequestException('The role must be STUDENT');
-    }
-
-    // TODO: refactor with isEmailAvailable function
-    const user = await this.usersService.getOne({
+  async isEmailAvailable(email: string) {
+    const student = await this.usersService.getOne({
       where: {
-        email: dto.email,
+        email,
       },
     });
 
-    if (user) {
+    return !!student;
+  }
+
+  async create(dto: CreateStudentDto) {
+    const isStudentExist = await this.isEmailAvailable(dto.email);
+
+    if (isStudentExist) {
       throw new BadRequestException('Student already exist.');
     }
 
@@ -44,9 +46,33 @@ export class StudentsService extends BaseService<User> {
 
     const hasdedPassword = await bcrypt.hash(dto.password, 10);
 
-    const newUser = this.userRepository.create(dto);
-    newUser.password = hasdedPassword;
+    return this.userRepository.save({
+      email: dto.email,
+      birthday: dto.birthday,
+      firstName: dto.firstName,
+      middleName: dto.middleName,
+      lastName: dto.lastName,
+      nickname: dto.nickname,
+      role: Role.Student,
+      gender: dto.gender,
+      password: hasdedPassword,
+      parentId: dto.parentId,
+    });
+  }
 
-    return this.userRepository.save(newUser);
+  async update(id: string, dto: UpdateStudentDto) {
+    const student = await this.getOneOrThrow({
+      where: {
+        id,
+      },
+    });
+
+    Object.assign(student, dto);
+
+    return this.userRepository.save(student);
+  }
+
+  async delete(id: string) {
+    return this.userRepository.delete({ id });
   }
 }
