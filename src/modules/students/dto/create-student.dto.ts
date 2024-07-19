@@ -3,10 +3,11 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   IsUUID,
 } from 'class-validator';
-import { Gender, Role } from 'src/shared/constants';
+import { Gender } from 'src/shared/constants';
 
 export class CreateStudentDto {
   @IsEmail()
@@ -37,12 +38,10 @@ export class CreateStudentDto {
   @IsNotEmpty()
   birthday: Date;
 
-  @IsEnum(Role)
-  role: Role;
-
   @IsEnum(Gender)
   gender: Gender;
 
   @IsUUID(4)
-  parentId: string;
+  @IsOptional()
+  parentId?: string;
 }
