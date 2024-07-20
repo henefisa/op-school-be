@@ -8,6 +8,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { StudentsModule } from './modules/students/students.module';
 import { ClassesModule } from './modules/classes/classes.module';
+import { SubjectsModule } from './modules/subjects/subjects.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ClassesModule } from './modules/classes/classes.module';
     StudentsModule,
     AuthModule,
     ClassesModule,
+    SubjectsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

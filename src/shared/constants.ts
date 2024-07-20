@@ -17,3 +17,8 @@ export enum ResultType {
   EndTerm = 'END_TERM',
   Other = 'OTHER',
 }
+
+export enum SubjectType {
+  THEORY = 'THEORY',
+  PRACTICE = 'PRACTICE',
+}
